@@ -408,8 +408,8 @@ void egmde::Launcher::Self::real_launch()
     {
         // TODO don't hard code MIR_SOCKET & WAYLAND_DISPLAY value
         // The Mir 0.31 API is lacking a good way to do this, but I hope to fix this for Mir 0.32
-        std::string mir_socket{getenv("XDG_RUNTIME_DIR")};
-        mir_socket += "/egmde_socket";
+        std::string const xdg_runtime_dir{getenv("XDG_RUNTIME_DIR")};
+        std::string const mir_socket = xdg_runtime_dir + "/egmde_socket";
         setenv("MIR_SOCKET", mir_socket.c_str(), 1);
         setenv("WAYLAND_DISPLAY", "egmde_wayland", 1);
         setenv("GDK_BACKEND", "wayland", 1);
@@ -428,12 +428,13 @@ void egmde::Launcher::Self::real_launch()
             if (app == "gnome-terminal")
                 app +=  " --app-id uk.co.octopull.egmde.Terminal";
 
-            auto command = "MIR_SOCKET=" + mir_socket +
+            auto command = "MIR_SOCKET=" + mir_socket + " XDG_RUNTIME_DIR=" + xdg_runtime_dir +
                            " WAYLAND_DISPLAY=egmde_wayland GDK_BACKEND=wayland QT_QPA_PLATFORM=wayland "
                            " SDL_VIDEODRIVER=wayland NO_AT_BRIDGE=1 " + app;
 
             char const* exec_args[] = {
                 "su",
+                "--login",
                 "--command",
                 command.c_str(),
                 login.value().c_str(),
