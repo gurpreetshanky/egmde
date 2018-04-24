@@ -428,15 +428,16 @@ void egmde::Launcher::Self::real_launch()
             if (app == "gnome-terminal")
                 app +=  " --app-id uk.co.octopull.egmde.Terminal";
 
+            auto command = "MIR_SOCKET=" + mir_socket +
+                           " WAYLAND_DISPLAY=egmde_wayland GDK_BACKEND=wayland QT_QPA_PLATFORM=wayland "
+                           " SDL_VIDEODRIVER=wayland NO_AT_BRIDGE=1 " + app;
+
             char const* exec_args[] = {
                 "su",
-                "--preserve-environment",
                 "--command",
-                nullptr,
+                command.c_str(),
                 login.value().c_str(),
                 nullptr };
-
-            exec_args[3] = app.c_str();
 
             execvp(exec_args[0], const_cast<char*const*>(exec_args));
         }
